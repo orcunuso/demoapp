@@ -1,4 +1,4 @@
 DISABLE_COLLECTSTATIC=1
 DISABLE_MIGRATE=1
-BLOG_SITE_NAME='Welcome to Openshift'
+BLOG_SITE_NAME='Welcome to Turkcell Container Platform'
 BLOG_BANNER_COLOR=blue
