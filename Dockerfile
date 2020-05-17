@@ -17,7 +17,8 @@ ENV S2I_SCRIPTS_PATH=/usr/libexec/s2i \
     S2I_BASH_ENV=/opt/app-root/etc/scl_enable \
     DISABLE_COLLECTSTATIC=1 \
     DISABLE_MIGRATE=1 \
-    BLOG_BANNER_COLOR=green
+    BLOG_BANNER_COLOR=green \
+    BLOG_SITE_NAME='Welcome to my fake site, ORCUNUSO.IO'
 
 RUN /tmp/scripts/assemble
 
