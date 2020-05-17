@@ -1,5 +1,5 @@
 .*.swp
-
+*.log
 *.py[cod]
 
 db.sqlite3
