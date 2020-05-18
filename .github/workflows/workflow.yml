@@ -18,3 +18,5 @@ jobs:
         repository: orcunuso/demoapp
         tags: v0
         push: true
+
+# https://github.com/docker/build-push-action
