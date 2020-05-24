@@ -37,3 +37,11 @@ def post_edit(request, pk):
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
+
+# The render() function takes the request object as its first argument, a template name
+# as its second argument and a dictionary as its optional third argument. It returns an 
+# HttpResponse object of the given template rendered with the given context.
+
+# The get_object_or_404() function takes a Django model as its first argument and an arbitrary 
+# number of keyword arguments, which it passes to the get() function of the model’s manager. 
+# It raises Http404 if the object doesn’t exist.

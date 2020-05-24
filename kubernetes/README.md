@@ -7,6 +7,7 @@ The configurations will be added later.
 ```bash
 kind create cluster --name=cluster0 --config=kind-config.yaml
 kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
+kubectl apply -f deploy-crd.yaml
 ```
 
 ## Deploy Jenkins
@@ -49,6 +50,6 @@ docker container run --name jenkins-test --rm -d --network kind --env DOCKER_HOS
 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 orcunuso/jenkinsci-bo:1.23.2
 docker cp /root/jenkins/config jenkins-test:/kubernetes/config
 docker exec -it jenkins-test /bin/bash
-helm repo add --ca-file /kubernetes/ca.crt --username=svcdemoapp --password=MyHarbor567 harbor <https://harbor.orcunuso.io/chartrepo/demoapp>
+helm repo add --ca-file /kubernetes/ca.crt --username=svcdemoapp --password=password harbor <https://harbor.orcunuso.io/chartrepo/demoapp>
 helm upgrade --wait --set applicationBlue.replicas=2 --set applicationGreen.replicas=2 --set applicationGreen.image.tag=v2 --set applicationBlue.image.tag=v1 demoapp harbor/demoapp
 ```

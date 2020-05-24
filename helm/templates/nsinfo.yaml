@@ -1,0 +1,10 @@
+apiVersion: k8s.orcunuso.io/v1alpha1
+kind: NSInfo
+metadata:
+  name: demoapp-nsinfo
+  namespace: {{ .Values.namespace }}
+spec:
+  owner: 'Ozan Orcunus'
+  environment: 'production'
+  title: 'DemoApp with Python and Django'
+  serviceId: '123456'
