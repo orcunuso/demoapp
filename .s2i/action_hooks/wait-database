@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -x
+
+echo " -----> Checking database connection"
+
+while true; do
+    psql "postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_SERVER:5432/postgres" -l
+    if [ $? -eq 0 ]; then
+        exit 0
+    fi
+    sleep 3
+done

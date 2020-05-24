@@ -1,0 +1,7 @@
+.*.swp
+*.log
+*.py[cod]
+*.gitignore.*
+*.tgz
+
+db.sqlite3
