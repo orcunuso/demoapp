@@ -23,6 +23,7 @@ docker container run --name jenkins-blueocean --rm -d --network kind --env DOCKE
 cp /root/.kube/config /root/jenkins
 # edit config -> cluster0-control-plane:6443
 docker cp /root/jenkins/config jenkins-blueocean:/kubernetes/config
+docker exec -it jenkins-blueocean docker pull centos/python-36-centos7:20200514-897c8e3
 ```
 
 ## Deploy DemoApp from Helm Repository
@@ -39,7 +40,7 @@ kubectl -n demoapp get pods,jobs,deployments,svc,pvc,sa,cm,secrets,ingressroutes
 
 ## Commit and trigger Jenkins build
 
-* Add a new subpath in the source code
+* Add a new subpath in the source code (/newurl)
 * Commit and push code
 * Trigger a manuel Jenkins build
 

@@ -2,6 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import Post
 from .forms import PostForm
+#from django.http import HttpResponse
+
+#def new_url(request):
+#    return HttpResponse("!!! New URL is functioning properly !!!", content_type="text/plain")
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
