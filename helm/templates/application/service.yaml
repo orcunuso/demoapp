@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.applicationBlue.serviceName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+  selector:
+    {{- include "demoapp.applicationBlue.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.applicationGreen.serviceName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+  selector:
+    {{- include "demoapp.applicationGreen.selectorLabels" . | nindent 4 }}

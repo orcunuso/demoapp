@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.applicationGreen.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.applicationGreen.replicas }}
+  selector:
+    matchLabels:
+      {{- include "demoapp.applicationGreen.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "demoapp.applicationGreen.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.applicationGreen.serviceAccountName }}
+      initContainers:
+        - name: wait-database
+          image: '{{ .Values.applicationGreen.image.repository }}:{{ .Values.applicationGreen.image.tag | default .Chart.AppVersion }}'
+          command: ["/bin/sh", "-c", "./.s2i/action_hooks/wait-database"]
+          resources:
+            {{- toYaml .Values.applicationGreen.resources | nindent 12 }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.configMapName }}
+          env:
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: DATABASE_PASSWORD
+      containers:
+        - name: {{ .Values.applicationGreen.name }}
+          image: '{{ .Values.applicationGreen.image.repository }}:{{ .Values.applicationGreen.image.tag | default .Chart.AppVersion }}'
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.configMapName }}
+          env:
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: DATABASE_PASSWORD
+          - name: DATABASE_URL
+            value: "postgres://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@demoapp-db-service:5432/blog"
+          - name: BLOG_BANNER_COLOR
+            value: {{ .Values.applicationGreen.color }}
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          livenessProbe:
+            timeoutSeconds: 1
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            httpGet:
+              path: /healthz/alive
+              port: 8080
+              scheme: HTTP
+          readinessProbe:
+            timeoutSeconds: 1
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            httpGet:
+              path: /healthz/ready
+              port: 8080
+              scheme: HTTP
+          resources:
+            {{- toYaml .Values.applicationGreen.resources | nindent 12 }}

@@ -1,0 +1,46 @@
+{{- if .Values.job.enabled }}
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: {{ .Values.job.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-database
+          image: '{{ .Values.applicationBlue.image.repository }}:{{ .Values.applicationBlue.image.tag | default .Chart.AppVersion }}'
+          command: ["/bin/sh", "-c", "./.s2i/action_hooks/wait-database"]
+          resources:
+            {{- toYaml .Values.applicationBlue.resources | nindent 12 }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.configMapName }}
+          env:
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: DATABASE_PASSWORD
+      containers:
+      - name: {{ .Values.job.name }}
+        image: '{{ .Values.applicationBlue.image.repository }}:{{ .Values.applicationBlue.image.tag | default .Chart.AppVersion }}' 
+        command: ["/bin/sh", "-c", "/opt/app-root/src/.s2i/action_hooks/setup"]
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.configMapName }}
+        env:
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secretName }}
+              key: DATABASE_PASSWORD
+        - name: DATABASE_URL
+          value: postgres://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@demoapp-db-service:5432/blog
+      restartPolicy: Never
+  backoffLimit: 1
+  completions: 1
+  parallelism: 1
+{{- end }}

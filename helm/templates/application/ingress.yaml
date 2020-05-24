@@ -1,0 +1,51 @@
+kind: IngressRoute
+apiVersion: contour.heptio.com/v1beta1
+metadata:
+  name: {{ .Values.ingressName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  virtualhost:
+    fqdn: {{ .Values.ingress.fqdn }}
+  routes:
+  - match: /
+    services:
+    - name: {{ .Values.applicationBlue.serviceName }}
+      port: 8080
+      weight: {{ .Values.ingress.weightBlue }}
+    - name: {{ .Values.applicationGreen.serviceName }}
+      port: 8080
+      weight: {{ .Values.ingress.weightGreen }}
+---
+kind: IngressRoute
+apiVersion: contour.heptio.com/v1beta1
+metadata:
+  name: {{ .Values.ingressName }}-blue
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  virtualhost:
+    fqdn: {{ .Values.ingress.fqdnBlue }}
+  routes:
+  - match: /
+    services:
+    - name: {{ .Values.applicationBlue.serviceName }}
+      port: 8080
+---
+kind: IngressRoute
+apiVersion: contour.heptio.com/v1beta1
+metadata:
+  name: {{ .Values.ingressName }}-green
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  virtualhost:
+    fqdn: {{ .Values.ingress.fqdnGreen }}
+  routes:
+  - match: /
+    services:
+    - name: {{ .Values.applicationGreen.serviceName }}
+      port: 8080

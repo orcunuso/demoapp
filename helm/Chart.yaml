@@ -1,0 +1,13 @@
+apiVersion: v2
+name: demoapp
+description: A Helm chart for Blog Demo Application.
+
+type: application
+version: 1.0.3
+appVersion: 1.0.3
+
+home: https://github.com/vOrcunus/demoapp
+icon: https://github.com/vOrcunus/demoapp/blob/master/htdocs/favicon.ico
+maintainers:
+- name: Ozan Orcunus
+  email: ozan@orcunus.com

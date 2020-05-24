@@ -1,0 +1,97 @@
+# Helm Chart values.
+#===============================================
+namespace: demoapp
+imagePullPolicy: IfNotPresent
+updateStrategy:
+  type: RollingUpdate
+loglevel: info
+labels:
+  app: demoapp
+pvcName: demoapp-pvc
+secretName: demoapp-secrets
+ingressName: demoapp-ingress
+configMapName: demoapp-cm
+
+environment:
+  postgresDatabase: blog
+  postgresUser: superuser
+  djangoAdminUsername: developer
+  djangoAdminEmail: django.admin@orcunuso.io
+  bannerColor: blue
+
+persistence:
+  enabled: true
+  resourcePolicy: keep
+  persistentVolumeClaim:
+    database:
+      existingClaim: ""
+      storageClass: ""
+      subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+
+database:
+  name: demoapp-db
+  serviceName: demoapp-db-service
+  matchLabels:
+    app: demoapp-db
+  image:
+    repository: harbor.orcunuso.io/demoapp/postgresql-96-centos7
+    tag: 20200507-132f8a7
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+applicationBlue:
+  name: demoapp-blue
+  color: blue
+  serviceName: demoapp-blue-service
+  matchLabels:
+    app: demoapp-blue
+  image:
+    repository: harbor.orcunuso.io/demoapp/demoapp
+    tag: v0
+  replicas: 0
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  serviceAccountName: svcdemoapp
+
+applicationGreen:
+  name: demoapp-green
+  color: green
+  serviceName: demoapp-green-service
+  matchLabels:
+    app: demoapp-green
+  image:
+    repository: harbor.orcunuso.io/demoapp/demoapp
+    tag: v0
+  replicas: 0
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  serviceAccountName: svcdemoapp
+
+ingress:
+  fqdn: demoapp.orcunuso.io
+  fqdnBlue: demoapp-blue.orcunuso.io
+  fqdnGreen: demoapp-green.orcunuso.io
+  weightBlue: 0
+  weightGreen: 0
+
+job:
+  enabled: false
+  name: demoapp-setup

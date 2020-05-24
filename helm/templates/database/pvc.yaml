@@ -1,0 +1,21 @@
+{{- if .Values.persistence.enabled }}
+{{- $databasePvc := .Values.persistence.persistentVolumeClaim.database -}}
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.pvcName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+  {{- if eq .Values.persistence.resourcePolicy "keep" }}
+  annotations:
+    helm.sh/resource-policy: keep
+  {{- end }}
+spec:
+  accessModes:
+  - {{ $databasePvc.accessMode }}
+  resources:
+    requests:
+      storage: {{ $databasePvc.size }}
+{{- end }}

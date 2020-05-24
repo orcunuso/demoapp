@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.configMapName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+data:
+  DJANGO_ADMIN_USERNAME: {{ .Values.environment.djangoAdminUsername }}
+  DJANGO_ADMIN_EMAIL: {{ .Values.environment.djangoAdminEmail }}
+  DATABASE_USERNAME: {{ .Values.environment.postgresUser }}
+  DATABASE_SERVER: {{ .Values.database.serviceName }}
+  DATABASE_NAME: {{ .Values.environment.postgresDatabase }}

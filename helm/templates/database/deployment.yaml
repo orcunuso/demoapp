@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.database.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "demoapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.database.replicas }}
+  selector:
+    matchLabels:
+      {{- include "demoapp.db.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "demoapp.db.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.database.name }}
+          image: '{{ .Values.database.image.repository }}:{{ .Values.database.image.tag | default .Chart.AppVersion }}'
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+          - name: POSTGRESQL_DATABASE
+            value: {{ .Values.environment.postgresDatabase }}
+          - name: POSTGRESQL_USER
+            value: {{ .Values.environment.postgresUser }}
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secretName }}
+                key: DATABASE_PASSWORD
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          livenessProbe:
+            timeoutSeconds: 1
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 5432
+          readinessProbe:
+            timeoutSeconds: 1
+            initialDelaySeconds: 5
+            exec:
+              command: ["/bin/sh", "-i", "-c", "psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'"]
+          resources:
+            {{- toYaml .Values.database.resources | nindent 12 }}
+          volumeMounts:
+          - name: data
+            mountPath: /var/lib/pgsql/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Values.pvcName }}
