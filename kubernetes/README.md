@@ -5,12 +5,12 @@ The configurations will be added later.
 ## Deploy Kubernetes Cluster
 
 ```bash
-kind create cluster --name=cluster0 --config=kind-config.yaml
+kind create cluster --name=cluster0 --config=kind-config-ha.yaml
 kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
 kubectl apply -f deploy-crd.yaml
 ```
 
-## Deploy Jenkins
+## Deploy Jenkins and Gogs
 
 ```bash
 docker container run --name jenkins-docker --rm -d --privileged --network kind --network-alias docker -p 2376:2376 \
@@ -20,10 +20,14 @@ docker container run --name jenkins-blueocean --rm -d --network kind --env DOCKE
 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 -v jenkins-data:/var/jenkins_home \
 -v jenkins-docker-certs:/certs/client:ro -p 8080:8080 orcunuso/jenkinsci-bo:1.23.2
 
+docker run --name=gogs --network kind -d --rm -p 10022:22 -p 10080:3000 -v gogs-data:/data gogs/gogs
+
 cp /root/.kube/config /root/jenkins
-# edit config -> cluster0-control-plane:6443
+# sed -i 's/172.16.137.22/cluster0-control-plane/g' /root/jenkins/config
 docker cp /root/jenkins/config jenkins-blueocean:/kubernetes/config
+docker exec -it jenkins-blueocean kubectl get nodes
 docker exec -it jenkins-blueocean docker pull centos/python-36-centos7:20200514-897c8e3
+docker exec -it jenkins-blueocean docker images
 ```
 
 ## Deploy DemoApp from Helm Repository
