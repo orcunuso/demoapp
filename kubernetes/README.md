@@ -10,7 +10,7 @@ kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
 kubectl apply -f deploy-crd.yaml
 ```
 
-## Deploy Jenkins and Gogs
+## Deploy Jenkins
 
 ```bash
 docker container run --name jenkins-docker --rm -d --privileged --network kind --network-alias docker -p 2376:2376 \
@@ -19,8 +19,6 @@ docker container run --name jenkins-docker --rm -d --privileged --network kind -
 docker container run --name jenkins-blueocean --rm -d --network kind --env DOCKER_HOST=tcp://docker:2376 \
 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 -v jenkins-data:/var/jenkins_home \
 -v jenkins-docker-certs:/certs/client:ro -p 8080:8080 orcunuso/jenkinsci-bo:1.23.2
-
-docker run --name=gogs --network kind -d --rm -p 10022:22 -p 10080:3000 -v gogs-data:/data gogs/gogs
 
 cp /root/.kube/config /root/jenkins
 # sed -i 's/172.16.137.22/cluster0-control-plane/g' /root/jenkins/config
