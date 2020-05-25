@@ -42,7 +42,7 @@ kubectl -n demoapp get pods,jobs,deployments,svc,pvc,sa,cm,secrets,ingressroutes
 
 ## Commit and trigger Jenkins build
 
-* Add a new subpath in the source code (/newurl)
+* Add a new url in the source code (/newurl)
 * Commit and push code
 * Trigger a manuel Jenkins build
 
