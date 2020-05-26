@@ -1,6 +1,6 @@
 ![CI Workflow](https://github.com/vOrcunus/demoapp/workflows/CI%20Workflow/badge.svg)
 
-## DemoApp
+# DemoApp
 
 This repository contains a sample implementation of a blog application, designed to show off various features of Kubernetes. The blog application is implemented using Python and Django.
 
@@ -13,3 +13,11 @@ The appearance of the blog application can also be adjusted using a set of envir
 * ``BLOG_SITE_NAME`` - Sets the title for pages.
 * ``BLOG_BANNER_COLOR`` - Sets the color of the page banner
 
+## Bill of Materials (BOM)
+
+This is a list of components that are referred in this repository in order to show off some features of Kubernetes and CI/CD pipelines.
+
+* KinD v1.18.2 (Kubernetes in Docker), a conformant multi-master Kubernetes cluster with the most recent release.
+* Harbor v2.0, an OCI-compliant docker registry and chartmuseum for our helm chart.
+* Jenkins with Blue Ocean plugin, for automating the build and release processes and demonstrate blue/green deployment.
+* A DNS server that serves the hostnames and FQDNs used in this repository.

@@ -1,7 +1,7 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
-  apiServerAddress: "172.16.137.22"
+  apiServerAddress: "kind.orcunuso.io"
   apiServerPort: 6443
 containerdConfigPatches:
 - |-

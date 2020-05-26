@@ -1,16 +1,22 @@
-# Running in Kubernetes
+# Application Lifecycle with Kubernetes, Jenkins and Helm
 
-The configurations will be added later.
+* Deploy a Kubernetes cluster with KinD (Three masters and one worker).
+* Deploy Jenkins and then create a multibranch pipeline with Blue Ocean.
+* Deploy the application (v1) on Kubernetes with Helm chart which is already pushed to Harbor.
+* Commit a new change to the newurl branch and trigger a new Jenkins build.
+* Experience blue/green deployment triggered by Jenkins and have fun :)
 
 ## Deploy Kubernetes Cluster
 
 ```bash
-kind create cluster --name=cluster0 --config=kind-config-ha.yaml
+kind create cluster --name=cluster0 --config=kubernetes/kind-config-ha.yaml
 kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
-kubectl apply -f deploy-crd.yaml
+kubectl apply -f kubernetes/deploy-crd.yaml
 ```
 
 ## Deploy Jenkins
+
+In order to execute Docker commands inside Jenkins nodes, download and run the `docker:dind` Docker image using the following docker container run command.
 
 ```bash
 docker container run --name jenkins-docker --rm -d --privileged --network kind --network-alias docker -p 2376:2376 \
@@ -18,10 +24,10 @@ docker container run --name jenkins-docker --rm -d --privileged --network kind -
 
 docker container run --name jenkins-blueocean --rm -d --network kind --env DOCKER_HOST=tcp://docker:2376 \
 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 -v jenkins-data:/var/jenkins_home \
--v jenkins-docker-certs:/certs/client:ro -p 8080:8080 orcunuso/jenkinsci-bo:1.23.2
+-v jenkins-docker-certs:/certs/client:ro -p 8080:8080 harbor.orcunuso.io/demoapp/jenkinsci-bo:1.23.2
 
 cp /root/.kube/config /root/jenkins
-# sed -i 's/172.16.137.22/cluster0-control-plane/g' /root/jenkins/config
+sed -i 's/kind.orcunuso.io/cluster0-control-plane/g' /root/jenkins/config
 docker cp /root/jenkins/config jenkins-blueocean:/kubernetes/config
 docker exec -it jenkins-blueocean kubectl get nodes
 docker exec -it jenkins-blueocean docker pull centos/python-36-centos7:20200514-897c8e3
@@ -36,17 +42,12 @@ helm search repo harbor
 helm install --set applicationBlue.replicas=2 --set applicationBlue.image.tag=v1 --set ingress.weightBlue=100 --set job.enabled=true demoapp harbor/demoapp
 helm list
 helm get manifest demoapp | grep "# Source"
-kubectl -n demoapp get pods -o wide
 kubectl -n demoapp get pods,jobs,deployments,svc,pvc,sa,cm,secrets,ingressroutes -o name
 ```
 
-## Commit and trigger Jenkins build
+<hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
-* Add a new url in the source code (/newurl)
-* Commit and push code
-* Trigger a manuel Jenkins build
-
-### For Jenkins Tests (Not used in regular workflow)
+These commands are not a part of the regular flow, only used for troubleshooting purposes
 
 ```bash
 docker container run --name jenkins-test --rm -d --network kind --env DOCKER_HOST=tcp://docker:2376 \
